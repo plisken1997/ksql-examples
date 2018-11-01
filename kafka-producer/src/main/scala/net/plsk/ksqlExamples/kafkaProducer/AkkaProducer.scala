@@ -9,15 +9,15 @@ import net.plsk.ksqlExamples.config.AppConfig
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import play.api.libs.json.Json
-import net.plsk.ksqlExamples.data.serDes.json.JsonGameOpinionSerDes._
-import net.plsk.ksqlExamples.data.serDes.GenGameOpinion
-import net.plsk.ksqlExamples.data.serDes.GenGameOpinion.GameOpinion
+import net.plsk.ksqlExamples.data.serDes.json.JsonShowOpinionSerDes._
+import net.plsk.ksqlExamples.data.serDes.GenShowOpinion
+import net.plsk.ksqlExamples.data.serDes.GenShowOpinion.ShowOpinion
 import net.plsk.ksqlExamples.streamGen.AkkaStream
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.Future
 
-object AkkaProducer extends App with AkkaStream[GameOpinion] {
+object AkkaProducer extends App with AkkaStream[ShowOpinion] {
 
   override val logger = LoggerFactory.getLogger(getClass)
 
@@ -26,12 +26,12 @@ object AkkaProducer extends App with AkkaStream[GameOpinion] {
     ProducerSettings(config, new StringSerializer, new StringSerializer)
       .withBootstrapServers(AppConfig.bootstrapServer.toString)
 
-  val elts = GenGameOpinion.streamGameOpinions()
+  val elts = GenShowOpinion.streamGameOpinions()
 
   val done: Future[Done] = fromStream(elts)
     .map { elt =>
       val json = Json.toJson(elt)
-      logger.debug(elt.game.name)
+      logger.debug(elt.show.name)
       logger.debug(json.toString)
       json.toString
     }
